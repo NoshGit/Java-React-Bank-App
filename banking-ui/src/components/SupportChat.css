@@ -1,0 +1,311 @@
+/* ============================================================
+   Support chat widget
+   Built from the app's design tokens so it matches the shell
+   and inherits the dark theme automatically.
+   ============================================================ */
+
+.sc-launcher {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  z-index: 1050;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-950);
+  background: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sc-launcher:hover {
+  transform: translateY(-2px);
+}
+
+.sc-launcher:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-lg), 0 0 0 3px var(--accent-tint);
+}
+
+.sc-launcher.is-open {
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---- Panel ---------------------------------------------------- */
+.sc-panel {
+  position: fixed;
+  right: var(--space-6);
+  bottom: calc(var(--space-6) + 56px + var(--space-3));
+  z-index: 1050;
+  width: 380px;
+  max-width: calc(100vw - var(--space-8));
+  height: 560px;
+  max-height: calc(100vh - var(--space-12));
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  animation: scPop 0.18s ease both;
+}
+
+@keyframes scPop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- Header --------------------------------------------------- */
+.sc-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: linear-gradient(180deg, var(--ink-850) 0%, var(--ink-950) 100%);
+  color: var(--text-inverse);
+  flex-shrink: 0;
+}
+
+.sc-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--ink-950);
+  color: var(--accent-500);
+  flex-shrink: 0;
+}
+
+.sc-header-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.sc-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.sc-subtitle {
+  font-size: 0.75rem;
+  color: rgba(245, 247, 250, 0.65);
+}
+
+.sc-close {
+  color: rgba(245, 247, 250, 0.7);
+  display: inline-flex;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.sc-close:hover {
+  color: var(--text-inverse);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ---- Messages ------------------------------------------------- */
+.sc-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--surface-sunken);
+}
+
+.sc-msg {
+  display: flex;
+  max-width: 85%;
+}
+
+.sc-msg-user {
+  align-self: flex-end;
+}
+
+.sc-msg-assistant {
+  align-self: flex-start;
+}
+
+.sc-bubble {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  box-shadow: var(--shadow-sm);
+}
+
+.sc-msg-assistant .sc-bubble {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.sc-msg-user .sc-bubble {
+  background: var(--ink-900);
+  color: var(--text-inverse);
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.sc-line {
+  display: block;
+}
+
+.sc-line:empty {
+  height: 0.5em;
+}
+
+/* ---- Typing indicator ---------------------------------------- */
+.sc-typing {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.sc-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--text-tertiary);
+  animation: scBlink 1.2s infinite ease-in-out both;
+}
+
+.sc-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.sc-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes scBlink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* ---- Suggestion chips ---------------------------------------- */
+.sc-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.sc-chip {
+  font-size: 0.8125rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-secondary);
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.sc-chip:hover {
+  border-color: var(--accent-500);
+  color: var(--accent-700);
+  background: var(--accent-tint);
+}
+
+/* ---- Input row ------------------------------------------------ */
+.sc-input-row {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.sc-input {
+  flex: 1;
+  border-radius: var(--radius-full);
+}
+
+.sc-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  color: var(--ink-950);
+  background: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%);
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.sc-send:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.sc-send:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+/* ---- Disclaimer ---------------------------------------------- */
+.sc-disclaimer {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+  text-align: center;
+  padding: 0 var(--space-4) var(--space-3);
+  background: var(--surface);
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+/* ---- Small screens ------------------------------------------- */
+@media (max-width: 480px) {
+  .sc-panel {
+    right: var(--space-3);
+    left: var(--space-3);
+    bottom: calc(var(--space-3) + 56px + var(--space-2));
+    width: auto;
+    height: min(70vh, 560px);
+  }
+
+  .sc-launcher {
+    right: var(--space-4);
+    bottom: var(--space-4);
+  }
+}
+
+/* ---- Reduced motion ------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .sc-panel,
+  .sc-launcher,
+  .sc-send,
+  .sc-typing span {
+    animation: none;
+    transition: none;
+  }
+}

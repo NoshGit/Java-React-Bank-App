@@ -1,0 +1,56 @@
+### Successful payment - expect 201 ACCEPTED
+POST http://localhost:8090/payments
+Content-Type: application/json
+
+{
+  "amount": 50.00,
+  "reference": "UTIL-12345"
+}
+
+> {%
+    client.test("status is 201", function () {
+        client.assert(response.status === 201, "Expected 201, got " + response.status);
+    });
+    client.test("body is ACCEPTED", function () {
+        client.assert(response.body.status === "ACCEPTED", "Expected ACCEPTED");
+    });
+%}
+
+### Failure trigger - amount 999.99 - expect 503 UNAVAILABLE
+POST http://localhost:8090/payments
+Content-Type: application/json
+
+{
+  "amount": 999.99,
+  "reference": "UTIL-99999"
+}
+
+> {%
+    client.test("status is 503", function () {
+        client.assert(response.status === 503, "Expected 503, got " + response.status);
+    });
+%}
+
+### Another normal amount - expect 201
+POST http://localhost:8090/payments
+Content-Type: application/json
+
+{
+  "amount": 1000.00,
+  "reference": "RENT-2026-07"
+}
+
+> {%
+    client.test("status is 201", function () {
+        client.assert(response.status === 201, "Expected 201, got " + response.status);
+    });
+%}
+
+### Admin - list registered stubs - expect 200
+GET http://localhost:8090/__admin/mappings
+
+> {%
+    client.test("admin reachable", function () {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+    });
+%}

@@ -1,0 +1,25 @@
+spring:
+  main:
+    web-application-type: none
+  kafka:
+    bootstrap-servers: localhost:9092
+    topic: transaction-stats
+    consumer:
+      group-id: statsconsumergroup
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.example.statsconsumer.model.TransactionStats
+        spring.json.trusted.packages: "com.example.statsconsumer.model"
+logging:
+  level:
+    com.example.statsconsumer: INFO
+app:
+  collector: console
+  kafka:
+    transaction-stats: transaction-stats
+    dead-letter-topic: transaction-stats-dead-letter
+    retry-interval-ms: 1000
+    retry-max-attempts: 3

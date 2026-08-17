@@ -1,0 +1,87 @@
+### Banking BFF -- request examples
+
+@bff = http://localhost:8080
+@authServer = http://127.0.0.1:9000
+
+###############################################################################
+### 1. Verify the BFF is running and rejecting unauthenticated calls.
+### Should return 401 Unauthorized.
+###############################################################################
+
+### Unauthenticated /api/me -- expect 401
+GET {{bff}}/api/me
+Accept: application/json
+
+### Unauthenticated /api/accounts -- expect 401
+GET {{bff}}/api/accounts
+Accept: application/json
+
+
+###############################################################################
+### 2. Log in via a browser, then paste the BFF_SESSION cookie value below.
+###
+### To get the cookie:
+###   - Open http://localhost:8080/oauth2/authorization/bank-auth in a browser.
+###   - Log in as alice / password.
+###   - Open DevTools, go to Application > Cookies > localhost.
+###   - Copy ONLY the value of the BFF_SESSION cookie, NOT the name.
+###
+### IMPORTANT: keep the "BFF_SESSION=" prefix on the line below and replace
+### only "PASTE_THE_COOKIE_VALUE_HERE" with the value you copied. A Cookie
+### header without a name (e.g. "Cookie: 953989EFE...") is invalid and the
+### server will treat the request as unauthenticated.
+###
+### Every time you restart the BFF, the old cookie value becomes stale and
+### you must log in again to get a fresh one. Sessions are server-side; they
+### do not survive a restart.
+###############################################################################
+
+@sessionCookie = BFF_SESSION=A1D90D3B204009967D75080387688D84
+
+
+###############################################################################
+### 3. Authenticated requests
+###############################################################################
+
+### /api/me -- expect 200 with user info
+GET {{bff}}/api/me
+Accept: application/json
+Cookie: {{sessionCookie}}
+
+### /api/accounts -- expect 200 with the account list
+GET {{bff}}/api/accounts
+Accept: application/json
+Cookie: {{sessionCookie}}
+
+### /api/transfers -- expect 200 with a transaction ID
+POST {{bff}}/api/transfers
+Accept: application/json
+Cookie: {{sessionCookie}}
+Content-Type: application/json
+
+{
+  "fromAccountId": "A001",
+  "toAccountId": "A002",
+  "amount": 100.00
+}
+
+### /api/accounts again -- A001 balance should be lower, A002 should be higher
+GET {{bff}}/api/accounts
+Accept: application/json
+Cookie: {{sessionCookie}}
+
+
+###############################################################################
+### 4. Logout and verify the session is gone.
+###############################################################################
+
+### POST /logout -- expect 200 (or 204 No Content)
+POST {{bff}}/logout
+Accept: application/json
+Cookie: {{sessionCookie}}
+
+### /api/me after logout -- expect 401
+GET {{bff}}/api/me
+Accept: application/json
+Cookie: {{sessionCookie}}
+

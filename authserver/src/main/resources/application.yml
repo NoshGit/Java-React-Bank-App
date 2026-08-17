@@ -1,0 +1,13 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: authserver
+  security:
+    oauth2:
+      authorizationserver:
+        # The issuer MUST be 127.0.0.1 (not localhost). The browser treats the two
+        # as different cookie origins, and the resource server validates the iss
+        # claim against this exact value.
+        issuer: http://127.0.0.1:9000

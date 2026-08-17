@@ -1,0 +1,125 @@
+### MD282 Capstone Authorization Server - smoke tests
+### Run requests 1 to 3 directly; they self-verify. Requests 4 onward need the
+### one-time browser login in the MANUAL FLOW block below.
+###
+### The client Basic credential is base64("bank-client-bff:bank-client-bff-secret").
+
+### 1. Discovery document. Issuer MUST be http://127.0.0.1:9000.
+GET http://127.0.0.1:9000/.well-known/openid-configuration
+
+> {%
+    client.test("discovery returns 200", function () {
+        client.assert(response.status === 200, "status was " + response.status);
+    });
+    client.test("issuer is 127.0.0.1:9000", function () {
+        client.assert(response.body.issuer === "http://127.0.0.1:9000",
+            "issuer was " + response.body.issuer);
+    });
+%}
+
+### 2. JWKS. The signing key must be published.
+GET http://127.0.0.1:9000/oauth2/jwks
+
+> {%
+    client.test("jwks returns 200", function () {
+        client.assert(response.status === 200, "status was " + response.status);
+    });
+    client.test("at least one key", function () {
+        client.assert(response.body.keys && response.body.keys.length > 0, "no keys");
+    });
+%}
+
+### 3. Authorize without a session. Expect a redirect to the login page.
+# @no-redirect
+GET http://127.0.0.1:9000/oauth2/authorize?response_type=code&client_id=bank-client-bff&redirect_uri=http://localhost:8080/login/oauth2/code/bank-auth&scope=openid%20profile%20account.read
+
+> {%
+    client.test("redirects unauthenticated user to login", function () {
+        client.assert(response.status === 302, "status was " + response.status);
+        var loc = response.headers.valueOf("Location") || "";
+        client.assert(loc.indexOf("/login") >= 0, "Location was " + loc);
+    });
+%}
+
+###############################################################################
+# MANUAL FLOW (one browser step, then requests 4 to 6 run from here)
+#
+# Step A. Open the URL below in a browser. Log in as  487-978493 / password
+#         (or teller1 / password). There is no consent screen.
+#         The browser then tries to redirect to
+#         http://localhost:8080/login/oauth2/code/bank-auth . If the BFF is not
+#         running the page fails to load, but the authorization code is in the
+#         address bar as  ?code=XXXX . Copy that code value.
+#
+#   http://127.0.0.1:9000/oauth2/authorize?response_type=code&client_id=bank-client-bff&redirect_uri=http://localhost:8080/login/oauth2/code/bank-auth&scope=openid%20profile%20account.read%20transaction.create
+#
+# Step B. Paste the code into request 4 below, replacing CODE_FROM_BROWSER,
+#         and run it. Requests 5 and 6 then reuse the captured tokens.
+###############################################################################
+
+### 4. Exchange the authorization code for tokens.
+POST http://127.0.0.1:9000/oauth2/token
+Authorization: Basic YmFuay1jbGllbnQtYmZmOmJhbmstY2xpZW50LWJmZi1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&code=Ve4treCgMIBCzbcolgUbNo1dY-rpQfsc6QRySybmHI9maBQN3_A3QfDp_ZdsfNBp8IOFM-NrvKNdX6ZHBcdn46R807CYfpf-AA0V3N-nlhiuajQpJEvwnzyBL_hhw1sU&redirect_uri=http://localhost:8080/login/oauth2/code/bank-auth
+
+> {%
+    client.test("token exchange returns 200", function () {
+        client.assert(response.status === 200, "status was " + response.status);
+    });
+    client.test("access_token present", function () {
+        client.assert(response.body.access_token, "no access_token");
+    });
+    client.global.set("access_token", response.body.access_token);
+    if (response.body.refresh_token) {
+        client.global.set("refresh_token", response.body.refresh_token);
+    }
+%}
+
+### 5. Call userinfo with the access token. Confirms the token is valid.
+GET http://127.0.0.1:9000/userinfo
+Authorization: Bearer {{access_token}}
+
+> {%
+    client.test("userinfo returns 200", function () {
+        client.assert(response.status === 200, "status was " + response.status);
+    });
+    client.test("subject present", function () {
+        client.assert(response.body.sub, "no sub claim");
+    });
+%}
+
+### 6. Refresh the access token.
+POST http://127.0.0.1:9000/oauth2/token
+Authorization: Basic YmFuay1jbGllbnQtYmZmOmJhbmstY2xpZW50LWJmZi1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=refresh_token&refresh_token={{refresh_token}}
+
+> {%
+    client.test("refresh returns 200", function () {
+        client.assert(response.status === 200, "status was " + response.status);
+    });
+    client.test("new access_token present", function () {
+        client.assert(response.body.access_token, "no access_token");
+    });
+%}
+
+###############################################################################
+# Verifying the custom claims
+#
+# Requests 1 to 6 prove the server runs, signs, and issues and refreshes tokens.
+# To confirm the capstone-specific claims, copy the access_token value from
+# request 4 and decode it at https://jwt.io . You should see:
+#
+#   sub                : 487-978493        (the customer_number, or teller1)
+#   preferred_username : 487-978493
+#   name               : Alice Customer
+#   roles              : ["account_holder"]   (or ["teller"])
+#   scope              : the role's allowed scopes, intersected with the request
+#   iss                : http://127.0.0.1:9000
+#
+# The sub being the customer_number is what lets the BankService resolve
+# ownership against customers.customer_number.
+###############################################################################

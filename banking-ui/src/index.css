@@ -1,0 +1,313 @@
+/* ============================================================
+   Design tokens -- premium light "private bank" theme
+   (dark navy sidebar as the one deliberately-dark chrome zone;
+   everything else is light, matching how top fintech dashboards
+   -- Mercury, Brex, Ramp, Stripe -- actually read as trustworthy)
+   ============================================================ */
+:root {
+  /* Ink / navy scale -- sidebar, hero card, dark text accents */
+  --ink-950: #0a1220;
+  --ink-900: #0f1c30;
+  --ink-850: #0d1a2c;
+  --ink-800: #16273f;
+  --ink-700: #21395a;
+
+  /* Accent -- restrained warm gold, used only for emphasis (distinctive vs.
+     generic fintech blue, and consistent with the "Private Bank" brand) */
+  --accent-500: #b98a2e;
+  --accent-600: #9c7526;
+  --accent-700: #7c5c1e;
+  --accent-tint: #f6ecd8;
+
+  /* Surface scale */
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-sunken: #fafbfc;
+  --surface-glass: #fafbfc;
+  --border: #e3e6eb;
+  --border-strong: #cdd2db;
+
+  /* Text */
+  --text-primary: #10192b;
+  --text-secondary: #4a5568;
+  --text-tertiary: #8a94a6;
+  --text-inverse: #f5f7fa;
+
+  /* Semantic */
+  --success-bg: #eafaf1;
+  --success-text: #0f7a4f;
+  --success-border: #b9ecd2;
+  --danger-bg: #fdf0ef;
+  --danger-text: #b3261e;
+  --danger-border: #f5c6c2;
+  --warning-bg: #fdf6e8;
+  --warning-text: #92660a;
+  --warning-border: #f2ddab;
+  --neutral-bg: #eef0f3;
+  --neutral-text: #4a5568;
+
+  /* Tooltip (chart/tooltips) - default for light theme is dark tooltip */
+  --tooltip-bg: rgba(10, 18, 32, 0.95);
+  --tooltip-text: var(--text-inverse);
+
+  /* Type */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Newsreader', Georgia, serif;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 999px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(16, 25, 43, 0.06);
+  --shadow-md: 0 4px 16px rgba(16, 25, 43, 0.08), 0 1px 3px rgba(16, 25, 43, 0.06);
+  --shadow-lg: 0 20px 40px -12px rgba(16, 25, 43, 0.18);
+  --shadow-glow: 0 0 0 1px rgba(185, 138, 46, 0.18), 0 8px 24px rgba(124, 92, 30, 0.16);
+
+  color-scheme: light;
+
+  /* Highlight */
+
+  --highlight: rgba(168, 151, 120, 0.6);
+
+  /* ------------------------------------------------------------
+     Bootstrap CSS-variable bridge -- real Bootstrap components
+     (btn, badge, alert, card, table, pagination, dropdown, nav-pills,
+     form-control) read these variables directly, so overriding them
+     here re-themes every stock Bootstrap class without re-declaring
+     its rules.
+     ------------------------------------------------------------ */
+  --bs-body-bg: var(--bg);
+  --bs-body-color: var(--text-primary);
+  --bs-body-color-rgb: 16, 25, 43;
+  --bs-emphasis-color: var(--text-primary);
+  --bs-secondary-color: var(--text-secondary);
+  --bs-tertiary-color: var(--text-tertiary);
+  --bs-tertiary-bg: var(--surface-sunken);
+  --bs-border-color: var(--border);
+  --bs-border-color-translucent: var(--border);
+  --bs-heading-color: var(--text-primary);
+  --bs-link-color: var(--accent-600);
+  --bs-link-hover-color: var(--accent-700);
+  --bs-link-color-rgb: 156, 117, 38;
+  --bs-link-hover-color-rgb: 124, 92, 30;
+
+  --bs-primary: var(--ink-950);
+  --bs-primary-rgb: 10, 18, 32;
+  --bs-primary-text-emphasis: var(--ink-900);
+  --bs-primary-bg-subtle: var(--accent-tint);
+  --bs-primary-border-subtle: var(--accent-600);
+
+  --bs-secondary: #ffffff;
+  --bs-secondary-rgb: 255, 255, 255;
+  --bs-secondary-bg-subtle: var(--surface-sunken);
+  --bs-secondary-border-subtle: var(--border-strong);
+  --bs-secondary-text-emphasis: var(--text-primary);
+
+  --bs-success: #0f7a4f;
+  --bs-success-rgb: 15, 122, 79;
+  --bs-success-bg-subtle: var(--success-bg);
+  --bs-success-border-subtle: var(--success-border);
+  --bs-success-text-emphasis: var(--success-text);
+
+  --bs-danger: #b3261e;
+  --bs-danger-rgb: 179, 38, 30;
+  --bs-danger-bg-subtle: var(--danger-bg);
+  --bs-danger-border-subtle: var(--danger-border);
+  --bs-danger-text-emphasis: var(--danger-text);
+
+  --bs-warning: #92660a;
+  --bs-warning-rgb: 146, 102, 10;
+  --bs-warning-bg-subtle: var(--warning-bg);
+  --bs-warning-border-subtle: var(--warning-border);
+  --bs-warning-text-emphasis: var(--warning-text);
+
+  --bs-info: var(--accent-600);
+  --bs-info-rgb: 156, 117, 38;
+  --bs-info-bg-subtle: var(--accent-tint);
+  --bs-info-border-subtle: var(--accent-600);
+  --bs-info-text-emphasis: var(--accent-600);
+
+  --bs-light: var(--surface-sunken);
+  --bs-dark: var(--ink-950);
+
+  --bs-card-bg: var(--surface);
+  --bs-card-border-color: var(--border);
+  --bs-card-color: var(--text-primary);
+  --bs-card-cap-bg: var(--surface-sunken);
+
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--text-primary);
+  --bs-table-border-color: var(--border);
+  --bs-table-striped-bg: rgba(16, 25, 43, 0.02);
+  --bs-table-hover-bg: rgba(16, 25, 43, 0.035);
+
+  --bs-dropdown-bg: var(--surface);
+  --bs-dropdown-border-color: var(--border);
+  --bs-dropdown-link-color: var(--text-secondary);
+  --bs-dropdown-link-hover-bg: var(--danger-bg);
+  --bs-dropdown-link-hover-color: var(--danger-text);
+  --bs-dropdown-box-shadow: var(--shadow-lg);
+
+  --bs-nav-pills-link-active-bg: var(--ink-950);
+
+  --bs-focus-ring-color: rgba(185, 138, 46, 0.3);
+}
+
+/* Dark theme overrides (opt-in via .theme-dark on <html> or <body>) */
+.theme-dark {
+  color-scheme: dark;
+
+  /* surfaces */
+  --bg: #07101a;
+  /* page background */
+  --surface: #0f1724;
+  /* card / dropdown */
+  --surface-sunken: #0b1220;
+  --surface-glass: rgba(12, 18, 28, 0.6);
+
+  /* ink / sidebar */
+  --ink-950: #02060a;
+  --ink-900: #041b2b;
+  --ink-850: #072033;
+  --ink-800: #082a3d;
+
+  /* borders and accents */
+  --border: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.08);
+
+  /* text */
+  --text-primary: #e6eef8;
+  --text-secondary: #b9c4d6;
+  --text-tertiary: #8f9bb0;
+  --text-inverse: #f5f7fa;
+
+  /* accent (keep same hue but darker) */
+  --accent-500: #caa25a;
+  --accent-600: #ab843d;
+  --accent-tint: rgba(202, 162, 90, 0.06);
+
+  /* Bootstrap bridge overrides */
+  --bs-body-bg: var(--bg);
+  --bs-body-color: var(--text-primary);
+  --bs-border-color: var(--border);
+  --bs-card-bg: var(--surface);
+  --bs-card-border-color: var(--border);
+  --bs-card-color: var(--text-primary);
+  --bs-dropdown-bg: var(--surface);
+  --bs-dropdown-border-color: var(--border);
+  --bs-dropdown-box-shadow: none;
+  --bs-nav-pills-link-active-bg: var(--ink-900);
+
+  /* Tooltip overrides in dark theme */
+  --tooltip-bg: var(--surface);
+  --tooltip-text: var(--text-primary);
+
+  /* Highlight */
+
+  --highlight: rgba(202, 162, 90, 0.06);
+}
+
+/* ============================================================
+     Reset
+     ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+input,
+select {
+  font-family: inherit;
+  font-size: 0.9375rem;
+}
+
+a {
+  color: inherit;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+.form-control,
+.form-select {
+  background-color: var(--surface);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--surface);
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+.input-group-text {
+  background-color: var(--surface-sunken);
+  border-color: var(--border);
+  color: var(--text-tertiary);
+}
+
+.nav-pills .nav-link.active {
+  color: var(--text-inverse);
+}
+
+.badge.text-bg-secondary {
+  background-color: var(--bs-danger) !important;
+}
+
+.history-controls .btn:not(.active) {
+  color: var(--text-primary) !important;
+}

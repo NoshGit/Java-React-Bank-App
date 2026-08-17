@@ -1,0 +1,178 @@
+### Step 1: Obtain a service token (run this first).
+POST http://localhost:9000/oauth2/token
+Authorization: Basic YmFuay1zZXJ2aWNlOmJhbmstc2VydmljZS1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&scope=account.read transaction.read
+
+###
+
+### Step 2: Health endpoint -- no token required, should return 200.
+GET http://localhost:8080/health
+
+###
+
+### Step 3: Accounts with no token -- should return 401.
+GET http://localhost:8080/api/v1/accounts
+
+###
+
+### Step 4: Accounts with a valid token -- should return 200.
+### Paste the access_token from Step 1.
+GET http://localhost:8080/api/v1/accounts
+Authorization: Bearer eyJraWQiOiJhYTk1MTU2My1mZGZhLTQ1ZjItODJkNC1kZmYzMzhlNGYxODkiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJiYW5rLXNlcnZpY2UiLCJhdWQiOiJiYW5rLXNlcnZpY2UiLCJuYmYiOjE3ODQ2MzY2OTgsInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJhY2NvdW50LnJlYWQiXSwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwIiwiZXhwIjoxNzg0NjQwMjk4LCJpYXQiOjE3ODQ2MzY2OTgsImp0aSI6IjFhODM2MmFkLTA2NGUtNGY5Yy05ZWRkLTI3MzljZDYzOThhNiJ9.Ht32Cl6cwfYARD_Ifn6vENxkIBp3k9gRGzCbftv39rgkfsA1j1NmJVjgZT_JIKX94eYimqcFjiPgiUw1EXh3lIVEWUsFrYGSuy16-IxCW2NTVU8bR8BlSeJkK2DdebxpszX9oIL-oTEyux8ICmylvnXeOJ93RSRSveeX66e8LDaphrP0n7JoYySU369CO0CdQpKUR8MCwht0EyZygPbOgK5BuQXKuhzNprN5wdkkiOGg_Zyra1rkCijKquz6DvG1dyTXirqdqvptMwfkt644eaU7x4VNz3F-v2TdS9gy3QbATpzOx62tok8etO-lBvHRWyVYrCBt8POpUphLUoBZGg
+
+###
+
+### Step 5: POST with read scopes only -- should return 403.
+### The service token has account.read but NOT account.create.
+POST http://localhost:8080/api/v1/accounts
+Authorization: Bearer eyJraWQiOiJhYTk1MTU2My1mZGZhLTQ1ZjItODJkNC1kZmYzMzhlNGYxODkiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJiYW5rLXNlcnZpY2UiLCJhdWQiOiJiYW5rLXNlcnZpY2UiLCJuYmYiOjE3ODQ2MzUxNTksInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJhY2NvdW50LnJlYWQiXSwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwIiwiZXhwIjoxNzg0NjM4NzU5LCJpYXQiOjE3ODQ2MzUxNTksImp0aSI6IjFiODlkMDViLWRiMzgtNDAzYS1hNjhhLTk3MzEwMzJiNTc0NiJ9.Wq2JTs91ODXwnSzbmf5KeONqxCcwsJDMm4_hO6JNS8RWN2kVdeiQu9mQMMFAQkNUpxaWBPvZpm0MMQo9RY2_p52VeJQWXnBhjFJZtjwsZsRDi1J7ivL-YjI9E6PDTjYOuX1oPHBWf1_Oedxf8XDKyAeCqw30b-D7jU40D7xTI20vzq2kyiML7aeSdOMzKvRqK-zaj-sIOztCgiIY8Qo9yT8l4tUNF2bTYAchwGeuKQUAAk8GT2dVeJaz536kInOXpMQAUBKU5h02AdRb0itsf_fRDe8xjc2SgNHkxZh92pb-bOTXV3uyyZ5CkF5-qnkxlbKwngf9s6zB2SljCLMpTQ
+Content-Type: application/json
+
+{
+  "id": "A006",
+  "customerId": "C002",
+  "accountType": "SAVINGS",
+  "balance": 500.00
+}
+
+### Current identity -- observe which claims are present for a service token.
+GET http://localhost:8080/api/v1/accounts/me
+Authorization: Bearer eyJraWQiOiJhYTk1MTU2My1mZGZhLTQ1ZjItODJkNC1kZmYzMzhlNGYxODkiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJiYW5rLXNlcnZpY2UiLCJhdWQiOiJiYW5rLXNlcnZpY2UiLCJuYmYiOjE3ODQ2MzUxNTksInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJhY2NvdW50LnJlYWQiXSwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwIiwiZXhwIjoxNzg0NjM4NzU5LCJpYXQiOjE3ODQ2MzUxNTksImp0aSI6IjFiODlkMDViLWRiMzgtNDAzYS1hNjhhLTk3MzEwMzJiNTc0NiJ9.Wq2JTs91ODXwnSzbmf5KeONqxCcwsJDMm4_hO6JNS8RWN2kVdeiQu9mQMMFAQkNUpxaWBPvZpm0MMQo9RY2_p52VeJQWXnBhjFJZtjwsZsRDi1J7ivL-YjI9E6PDTjYOuX1oPHBWf1_Oedxf8XDKyAeCqw30b-D7jU40D7xTI20vzq2kyiML7aeSdOMzKvRqK-zaj-sIOztCgiIY8Qo9yT8l4tUNF2bTYAchwGeuKQUAAk8GT2dVeJaz536kInOXpMQAUBKU5h02AdRb0itsf_fRDe8xjc2SgNHkxZh92pb-bOTXV3uyyZ5CkF5-qnkxlbKwngf9s6zB2SljCLMpTQ
+
+### The downstream endpoint.
+### Inbound: the caller's token authenticates this request.
+### Outbound: the Bank API obtains its own service token automatically.
+### Watch the Authorization Server console when this executes -- you will see a
+### POST /oauth2/token request arrive from bank-service.
+GET http://localhost:8080/api/v1/accounts/downstream
+Authorization: Bearer eyJraWQiOiJlNTczZDIyMC02NTZjLTQwYWMtYjE3MC02MWQzMThkZjRmNzkiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJiYW5rLXNlcnZpY2UiLCJhdWQiOiJiYW5rLXNlcnZpY2UiLCJuYmYiOjE3ODQ3MjA3MjgsInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJhY2NvdW50LnJlYWQiXSwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwIiwiZXhwIjoxNzg0NzI0MzI4LCJpYXQiOjE3ODQ3MjA3MjgsImp0aSI6IjY5MmRkNTBiLWNiMzUtNDkwMC05NDI4LTVkZjU2ODFhODU2NSJ9.UfSaubB-ZWscR7TEdRtD4HhE1rymISqmkWKqk0_wcikmBxrgL1Y3UHcnKO9VT2jb-8apmu88wjM3KTyKrOio0lTFsBNCHuvXnjEl_H0dRqroA82dD41R20itS4h0sUrz3NSf22wT9e0Nd6lsVqLNLmHJ63SBYLqAmDSUpgOeyvFvFgGwzIoRnQ9IJt2eCuZoUSpCI4DuE8Gn9Pg26DBl4FS7_VokGHGRcaNbs4p65VHXiK-lYo24ndl9tk5XiN8Vw48NnB8Wy2m-r-wpvnASXKlqyJ7eu17TFKl5NwsRqRN6AZwfNp_KAkxOeGaVKxdp_INVonBEKMBEB3SMePZsJA
+
+###############################################################################
+# Downstream endpoint tests
+#
+# The /downstream endpoint demonstrates the Client Credentials flow in action:
+# the inbound request authenticates the caller (any valid token works), and
+# then the controller calls fetchAllFromDownstream(), which uses the
+# bank-service's own token to call GET /api/v1/accounts on this same server.
+#
+# Watch the Authorization Server's console as these run. The first call after
+# Bank API startup produces a "POST /oauth2/token" from bank-service;
+# subsequent calls within the token's 1-hour lifetime skip that step
+# (the token is cached by OAuth2AuthorizedClientManager).
+###############################################################################
+
+### Step A: Get a service token so you have a valid token to use as the
+###         inbound credential for the downstream tests below. Copy the
+###         access_token from the response.
+POST http://localhost:9000/oauth2/token
+Authorization: Basic YmFuay1zZXJ2aWNlOmJhbmstc2VydmljZS1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&scope=account.read transaction.read
+
+###
+
+### Test D1: Downstream call with a service token as the inbound credential.
+###          Expected: 200 with all 5 accounts.
+###          Watch the auth server console: the FIRST time this runs after
+###          starting the Bank API, you will see an outbound POST /oauth2/token
+###          from bank-service. That is the Bank API acquiring its own service
+###          token to make the downstream call.
+GET http://localhost:8080/api/v1/accounts/downstream
+Authorization: Bearer eyJraWQiOiJlNTczZDIyMC02NTZjLTQwYWMtYjE3MC02MWQzMThkZjRmNzkiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJiYW5rLXNlcnZpY2UiLCJhdWQiOiJiYW5rLXNlcnZpY2UiLCJuYmYiOjE3ODQ3MjE4NTMsInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJhY2NvdW50LnJlYWQiXSwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwIiwiZXhwIjoxNzg0NzI1NDUzLCJpYXQiOjE3ODQ3MjE4NTMsImp0aSI6IjA3MWYyZTEzLWIxZGYtNDY0NC05N2EwLTEyYjkwNWE5YzkyMCJ9.fXPMqqGOThRZ3uMbuGrcuauB-MLP5lfGG7wMt1-5Lwx9JQwS24Zvoip6M8FUy8NL97fGTFRJFZm1O0hXQHCHuasyVttmJwoBjGdcOqQ9rlm1e-9LRjeyeMwD9Vzr7zpQCRPZj-12xAqmfZ25EWef3LSdvDtYmP_rzZ-9UeZJ0Zwj9gtkDdZupxsQqL4GHC_EKpxMq9-uAxPmEz6BXb2r1mo5pnzXiMmTVV6lOdaLG46AH3s2BxP4POevtjQ0WfYl7MnNoizk_DOAUaJU0JU2mg5KvZjIJ2UZ3dSarbTnYaSt68eICPRSxR_AGXu93_l2UYYK6W9svi8EwOBEW5TCDw
+
+###
+
+### Test D2: Run the same call again immediately.
+###          Expected: 200 with all 5 accounts, but this time NO new
+###          POST /oauth2/token appears in the auth server console. The
+###          cached service token is reused. This is the cache behavior
+###          that Exercise 5 Checkpoint 1 asks about.
+GET http://localhost:8080/api/v1/accounts/downstream
+Authorization: Bearer eyJraWQiOiJlNTczZDIyMC02NTZjLTQwYWMtYjE3MC02MWQzMThkZjRmNzkiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJiYW5rLXNlcnZpY2UiLCJhdWQiOiJiYW5rLXNlcnZpY2UiLCJuYmYiOjE3ODQ3MjE4NTMsInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJhY2NvdW50LnJlYWQiXSwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwIiwiZXhwIjoxNzg0NzI1NDUzLCJpYXQiOjE3ODQ3MjE4NTMsImp0aSI6IjA3MWYyZTEzLWIxZGYtNDY0NC05N2EwLTEyYjkwNWE5YzkyMCJ9.fXPMqqGOThRZ3uMbuGrcuauB-MLP5lfGG7wMt1-5Lwx9JQwS24Zvoip6M8FUy8NL97fGTFRJFZm1O0hXQHCHuasyVttmJwoBjGdcOqQ9rlm1e-9LRjeyeMwD9Vzr7zpQCRPZj-12xAqmfZ25EWef3LSdvDtYmP_rzZ-9UeZJ0Zwj9gtkDdZupxsQqL4GHC_EKpxMq9-uAxPmEz6BXb2r1mo5pnzXiMmTVV6lOdaLG46AH3s2BxP4POevtjQ0WfYl7MnNoizk_DOAUaJU0JU2mg5KvZjIJ2UZ3dSarbTnYaSt68eICPRSxR_AGXu93_l2UYYK6W9svi8EwOBEW5TCDw
+
+### Validation (manual)
+### 1) Watch the Authorization Server console/logs while running the two requests above.
+###    The first call should show a POST /oauth2/token from bank-service; the second call must NOT.
+### 2) If auth server logs are available, run before/after counts to assert idempotence:
+###    grep "POST /oauth2/token" path/to/auth-server.log | wc -l
+###    The count should increase by 1 after the first call and remain unchanged after the second.
+### 3) Optional automated check (if the auth server exposes a diagnostic endpoint):
+###    GET http://localhost:9000/test/issued-tokens
+###    Expected JSON: { "issued": n } where n does not increase on the second call.
+### 4) For Spring Boot auth servers enable TRACE for oauth2 client to observe token acquisition in detail:
+###    -Dlogging.level.org.springframework.security.oauth2.client=TRACE
+###    Verify no additional token acquisition on the second request.
+
+
+###
+
+### Test D3: Downstream call with NO Authorization header.
+###          Expected: 401 Unauthorized. Inbound authentication fails at the
+###          SecurityFilterChain before the controller is even reached, so
+###          no downstream call happens. The auth server console stays silent.
+GET http://localhost:8080/api/v1/accounts/downstream
+
+###
+
+### Test D4: Downstream call with an obviously invalid token.
+###          Expected: 401 Unauthorized with a WWW-Authenticate: Bearer header
+###          containing error="invalid_token" in the response. The token
+###          could not be verified against the JWKS, so the inbound check
+###          fails. Again, no downstream call happens.
+GET http://localhost:8080/api/v1/accounts/downstream
+Authorization: Bearer not-a-real-token
+
+###
+
+### Test D5: Downstream call with alice's user token. Complete the Authorization
+###          Code flow for alice first (see Exercise 1), then paste her
+###          access_token below.
+###          Expected: 200 with all 5 accounts. The outbound call uses the
+###          bank-service service token, NOT alice's user token, so it sees
+###          everything. Alice's identity is not forwarded.
+GET http://localhost:8080/api/v1/accounts/downstream
+Authorization: Bearer eyJraWQiOiJlNTczZDIyMC02NTZjLTQwYWMtYjE3MC02MWQzMThkZjRmNzkiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJiYW5rLXNlcnZpY2UiLCJhdWQiOiJiYW5rLXNlcnZpY2UiLCJuYmYiOjE3ODQ3MjE4NTMsInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJhY2NvdW50LnJlYWQiXSwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwIiwiZXhwIjoxNzg0NzI1NDUzLCJpYXQiOjE3ODQ3MjE4NTMsImp0aSI6IjA3MWYyZTEzLWIxZGYtNDY0NC05N2EwLTEyYjkwNWE5YzkyMCJ9.fXPMqqGOThRZ3uMbuGrcuauB-MLP5lfGG7wMt1-5Lwx9JQwS24Zvoip6M8FUy8NL97fGTFRJFZm1O0hXQHCHuasyVttmJwoBjGdcOqQ9rlm1e-9LRjeyeMwD9Vzr7zpQCRPZj-12xAqmfZ25EWef3LSdvDtYmP_rzZ-9UeZJ0Zwj9gtkDdZupxsQqL4GHC_EKpxMq9-uAxPmEz6BXb2r1mo5pnzXiMmTVV6lOdaLG46AH3s2BxP4POevtjQ0WfYl7MnNoizk_DOAUaJU0JU2mg5KvZjIJ2UZ3dSarbTnYaSt68eICPRSxR_AGXu93_l2UYYK6W9svi8EwOBEW5TCDw
+
+###
+
+### Test D6: Downstream call with edward's (teller) token.
+###          Expected: 200 with all 5 accounts. Same reason as D5: the inbound
+###          token is just a credential for the request, the outbound call
+###          uses the service token regardless of who the caller is.
+GET http://localhost:8080/api/v1/accounts/downstream
+Authorization: Bearer <paste-edward-teller-token-here>
+
+###
+
+### Test D7: Downstream call with the auditor's token.
+###          Expected: 200 with all 5 accounts. Even though the auditor has
+###          read-only permissions and could see all accounts directly via
+###          GET /api/v1/accounts, the downstream call still flows through
+###          the same service-token path -- the auditor's identity is not
+###          forwarded either.
+GET http://localhost:8080/api/v1/accounts/downstream
+Authorization: Bearer eyJraWQiOiJlNTczZDIyMC02NTZjLTQwYWMtYjE3MC02MWQzMThkZjRmNzkiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJiYW5rLXNlcnZpY2UiLCJhdWQiOiJiYW5rLXNlcnZpY2UiLCJuYmYiOjE3ODQ3MjE4NTMsInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJhY2NvdW50LnJlYWQiXSwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwIiwiZXhwIjoxNzg0NzI1NDUzLCJpYXQiOjE3ODQ3MjE4NTMsImp0aSI6IjA3MWYyZTEzLWIxZGYtNDY0NC05N2EwLTEyYjkwNWE5YzkyMCJ9.fXPMqqGOThRZ3uMbuGrcuauB-MLP5lfGG7wMt1-5Lwx9JQwS24Zvoip6M8FUy8NL97fGTFRJFZm1O0hXQHCHuasyVttmJwoBjGdcOqQ9rlm1e-9LRjeyeMwD9Vzr7zpQCRPZj-12xAqmfZ25EWef3LSdvDtYmP_rzZ-9UeZJ0Zwj9gtkDdZupxsQqL4GHC_EKpxMq9-uAxPmEz6BXb2r1mo5pnzXiMmTVV6lOdaLG46AH3s2BxP4POevtjQ0WfYl7MnNoizk_DOAUaJU0JU2mg5KvZjIJ2UZ3dSarbTnYaSt68eICPRSxR_AGXu93_l2UYYK6W9svi8EwOBEW5TCDw
+
+###
+
+### Test D8: The contrast that makes the Client Credentials flow click.
+###          Run these two requests back-to-back as alice. They go to the
+###          same controller, with the same authenticated user, but answer
+###          fundamentally different questions.
+
+### D8a: alice asks "what are MY accounts?" -- the inbound token's sub claim
+###      drives the answer. Expected: 200 with only A001 and A002 (alice's).
+GET http://localhost:8080/api/v1/accounts/mine
+Authorization: Bearer eyJraWQiOiJlNTczZDIyMC02NTZjLTQwYWMtYjE3MC02MWQzMThkZjRmNzkiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJiYW5rLXNlcnZpY2UiLCJhdWQiOiJiYW5rLXNlcnZpY2UiLCJuYmYiOjE3ODQ3MjQxMDEsInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJhY2NvdW50LnJlYWQiXSwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwIiwiZXhwIjoxNzg0NzI3NzAxLCJpYXQiOjE3ODQ3MjQxMDEsImp0aSI6ImZiYTdmYzljLTk4OWMtNGIxMi05MmJkLTUzZGE4NDQ4OWM5OCJ9.UiphKFRCl_uXu-JZl9dr0kwT_5JDSworuSPuc9nAP0nrTeind3UfjFEqgt_wJUUWlpWK2K7OMi9PnGYvbHowzPx_KiI7xNzZAUvlU1swK8356RHOF3yfV-KMbWU7Dix2FGQ2QLd-vf2MZ5bEyQ3h7HtckeFZfere8aIZd9Qj3sqdyt8foYxWNO2sOaRCLONIaEyQ7gMXtH92K5ZJ1kQ-OXwOax69H2i0lZvXQPRmois-jme9PIGXWuuus71QUrKrOT0xmjM_qDyRby0AmAaFKkaY4hg460ThjNlEY7q0SIEfOrELby0SLLOwpVPdXKQdKTVGooKeFdzeJi1u6QLU9w
+
+### D8b: alice triggers a downstream call. The outbound call uses the
+###      service identity, not alice's identity. Expected: 200 with all 5
+###      accounts, including accounts owned by bob and carla.
+GET http://localhost:8080/api/v1/accounts/downstream
+Authorization: Bearer eyJraWQiOiJlNTczZDIyMC02NTZjLTQwYWMtYjE3MC02MWQzMThkZjRmNzkiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJiYW5rLXNlcnZpY2UiLCJhdWQiOiJiYW5rLXNlcnZpY2UiLCJuYmYiOjE3ODQ3MjQxMDEsInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJhY2NvdW50LnJlYWQiXSwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwIiwiZXhwIjoxNzg0NzI3NzAxLCJpYXQiOjE3ODQ3MjQxMDEsImp0aSI6ImZiYTdmYzljLTk4OWMtNGIxMi05MmJkLTUzZGE4NDQ4OWM5OCJ9.UiphKFRCl_uXu-JZl9dr0kwT_5JDSworuSPuc9nAP0nrTeind3UfjFEqgt_wJUUWlpWK2K7OMi9PnGYvbHowzPx_KiI7xNzZAUvlU1swK8356RHOF3yfV-KMbWU7Dix2FGQ2QLd-vf2MZ5bEyQ3h7HtckeFZfere8aIZd9Qj3sqdyt8foYxWNO2sOaRCLONIaEyQ7gMXtH92K5ZJ1kQ-OXwOax69H2i0lZvXQPRmois-jme9PIGXWuuus71QUrKrOT0xmjM_qDyRby0AmAaFKkaY4hg460ThjNlEY7q0SIEfOrELby0SLLOwpVPdXKQdKTVGooKeFdzeJi1u6QLU9w
+
+### Unauthenticated request -- expect 401
+GET http://localhost:8081/api/v1/accounts

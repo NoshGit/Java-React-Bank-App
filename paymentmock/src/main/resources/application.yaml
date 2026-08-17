@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: paymentmock
+  main:
+    web-application-type: none

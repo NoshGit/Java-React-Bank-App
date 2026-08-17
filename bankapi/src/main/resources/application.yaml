@@ -1,0 +1,54 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: bankapi
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:oracle:thin:@//localhost:1522/XEPDB1
+    username: labuser
+    password: labpass123
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+    show-sql: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwks-uri: http://127.0.0.1:9000/oauth2/jwks
+          issuer-uri: http://127.0.0.1:9000
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+    properties:
+      spring.json.add.type.headers: false
+
+# Logging configuration - uses logback-spring.xml
+logging:
+  level:
+    root: INFO
+    # Database logging disabled
+    org.hibernate: WARN
+    org.hibernate.SQL: WARN
+    org.springframework.jdbc: WARN
+
+app:
+  kafka:
+    transaction-stats-topic: transaction-stats
+  payment-service:
+    base-url: http://localhost:8090
